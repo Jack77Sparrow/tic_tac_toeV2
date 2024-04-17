@@ -12,6 +12,7 @@ def which_turn():
 i = 0
 button_states = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]  # Хранение состояний кнопок (0 - пусто, 1 - player_1, 2 - player_2)
 button_positions = [[(j * 300, i * 300) for j in range(3)] for i in range(3)]  # Хранение позиций кнопок
+print(button_positions)
 def on_button_press(button):
     global i, button_states, button_positions
     button_x, button_y = button.pos
@@ -23,6 +24,7 @@ def on_button_press(button):
 
     # Определение игрока и изменение цвета кнопки
     if first_hod == "player_1":
+        print(button_color[0], button_color[1], button_color[2])
         if button_color[0] == 1 and button_color[1] == 10 and button_color[2] == 0:
             which_turn()
         else:
@@ -33,6 +35,7 @@ def on_button_press(button):
                 print(buttons)  # Вывод состояния кнопок
             which_turn()
     else:
+        print(button_color[0], button_color[1], button_color[2])
         if button_color[0] == 1 and button_color[1] == 0 and button_color[2] == 0:
             which_turn()
         else:
