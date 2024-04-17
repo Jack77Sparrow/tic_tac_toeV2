@@ -7,6 +7,7 @@ from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
+import sys
 first_hod = "player_1"
 
 def which_turn():
@@ -52,6 +53,10 @@ def on_button_press(button):
 
     print(check_winner())  # Проверка победителя после каждого хода
  # Проверка победителя после каждого хода
+    # winner_message = check_winner()
+    # print(winner_message)  # Print the winner message
+    # if winner_message != "No winner yet.":
+    #     sys.exit()
 
 # Проверка выигрышных комбинаций
 def check_win():
@@ -70,9 +75,13 @@ def check_win():
 def check_winner():
     if check_win():
         if first_hod == "player_1":
+            
             return "Player 1 wins!"
+            sys.exit()
+            
         else:
             return "Player 2 wins!"
+            sys.exit()
     return "No winner yet."
 
 class InputScreen(Screen):
@@ -92,26 +101,42 @@ class InputScreen(Screen):
         self.manager.get_screen('game').start_game(self.input_text.text)
         self.manager.current = 'game'
 
-
 class GameScreen(Screen):
     def __init__(self, **kwargs):
         super(GameScreen, self).__init__(**kwargs)
-        self.layout = BoxLayout(orientation='vertical')
-        self.game_label = Label(text="Игра начинается!")
-        self.layout.add_widget(self.game_label)
+        self.layout = GridLayout(cols=3, spacing=10)
+        # self.game_label = Label(text="Игра начинается!", )
+        # self.layout.add_widget(self.game_label)
         self.add_widget(self.layout)
 
     def start_game(self, player_name):
-        self.game_label.text = f"Игра начинается, {player_name}!"
+        # self.game_label.text = f"Игра начинается, {player_name}!"
+        for i in range(3):
+            for j in range(3):
+                button = Button(text=f'Button {i * 3 + j + 1}', background_color=[1, 1, 1, 1])
+                button_positions[i][j] = (i * 300, j * 300)
+                button.bind(on_press=lambda btn: on_button_press(btn))
+                self.layout.add_widget(button)  # Add button to the layout
+class Win(Screen):
+    def __init__(self, **kwargs):
+        super(Win, self).__init__(**kwargs)
+        self.layout= BoxLayout(orientation="vertical")
+        self.game_label = Label(text="player *** won game!!!", )
+        self.layout.add_widget(self.game_label)
+        self.add_widget(self.layout)
 
+    def win_message(self, win_player):
+        self.game_label.text = f'player win'
 class ColorGame(App):
     def build(self):
         # layout = GridLayout(cols=3, spacing=10)
         sm = ScreenManager()
         input_screen = InputScreen(name = "input")
         game_screen = GameScreen(name = "game")
+        win = Win(name = "win screen")
         sm.add_widget(input_screen)
         sm.add_widget(game_screen)
+        sm.add_widget(win)
         for i in range(3):
             for j in range(3):
                 
