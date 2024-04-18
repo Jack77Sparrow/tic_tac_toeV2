@@ -52,7 +52,7 @@ def on_button_press(button):
             which_turn()
 
     print(check_winner())  # Проверка победителя после каждого хода
- # Проверка победителя после каждого хода
+
     # winner_message = check_winner()
     # print(winner_message)  # Print the winner message
     # if winner_message != "No winner yet.":
@@ -98,6 +98,7 @@ class InputScreen(Screen):
 
     def switch_to_game(self, instance):
         # Переключаемся на экран игры и передаем введенное имя
+        
         self.manager.get_screen('game').start_game(self.input_text.text)
         self.manager.current = 'game'
 
@@ -124,9 +125,18 @@ class Win(Screen):
         self.game_label = Label(text="player *** won game!!!", )
         self.layout.add_widget(self.game_label)
         self.add_widget(self.layout)
-
-    def win_message(self, win_player):
-        self.game_label.text = f'player win'
+    def win_message(self):
+        # if check_winner() == "Player 1 wins!" or check_winner() == "Player 2 wins!":
+        #     print("win")
+            self.manager.get_screen("win screen").start_game(self.layout)
+            self.manager.current = "win screen"
+            self.game_label.text = f'player win'
+    if check_winner() == "Player 1 wins!":
+        print("win")
+        win_message()
+            
+    else:
+        print("loose")
 class ColorGame(App):
     def build(self):
         # layout = GridLayout(cols=3, spacing=10)
