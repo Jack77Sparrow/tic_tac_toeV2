@@ -50,13 +50,10 @@ def on_button_press(button):
             for buttons in button_states:
                 print(buttons)  # Вывод состояния кнопок
             which_turn()
-
-    print(check_winner())  # Проверка победителя после каждого хода
-
-    # winner_message = check_winner()
-    # print(winner_message)  # Print the winner message
-    # if winner_message != "No winner yet.":
-    #     sys.exit()
+    print(check_winner())
+    if check_winner() != "No winner yet.":
+        App.get_running_app().root.current = 'win'
+        
 
 # Проверка выигрышных комбинаций
 def check_win():
@@ -122,28 +119,19 @@ class Win(Screen):
     def __init__(self, **kwargs):
         super(Win, self).__init__(**kwargs)
         self.layout= BoxLayout(orientation="vertical")
-        self.game_label = Label(text="player *** won game!!!", )
+        self.game_label = Label(text="")
         self.layout.add_widget(self.game_label)
         self.add_widget(self.layout)
-    def win_message(self):
-        # if check_winner() == "Player 1 wins!" or check_winner() == "Player 2 wins!":
-        #     print("win")
-            self.manager.get_screen("win screen").start_game(self.layout)
-            self.manager.current = "win screen"
-            self.game_label.text = f'player win'
-    if check_winner() == "Player 1 wins!":
-        print("win")
-        win_message()
-            
-    else:
-        print("loose")
+    def win_message(self, winner):
+        self.game_label.text = winner
+    
 class ColorGame(App):
     def build(self):
         # layout = GridLayout(cols=3, spacing=10)
         sm = ScreenManager()
         input_screen = InputScreen(name = "input")
         game_screen = GameScreen(name = "game")
-        win = Win(name = "win screen")
+        win = Win(name = "win")
         sm.add_widget(input_screen)
         sm.add_widget(game_screen)
         sm.add_widget(win)
