@@ -2,7 +2,12 @@ import kivy
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
-
+from kivy.uix.textinput import TextInput
+from kivy.core.window import Window
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+import sys
 first_hod = "player_1"
 
 def which_turn():
@@ -12,6 +17,7 @@ def which_turn():
 i = 0
 button_states = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]  # Хранение состояний кнопок (0 - пусто, 1 - player_1, 2 - player_2)
 button_positions = [[(j * 300, i * 300) for j in range(3)] for i in range(3)]  # Хранение позиций кнопок
+print(button_positions)
 def on_button_press(button):
     global i, button_states, button_positions
     button_x, button_y = button.pos
@@ -23,6 +29,7 @@ def on_button_press(button):
 
     # Определение игрока и изменение цвета кнопки
     if first_hod == "player_1":
+        print(button_color[0], button_color[1], button_color[2])
         if button_color[0] == 1 and button_color[1] == 10 and button_color[2] == 0:
             which_turn()
         else:
@@ -33,6 +40,7 @@ def on_button_press(button):
                 print(buttons)  # Вывод состояния кнопок
             which_turn()
     else:
+        print(button_color[0], button_color[1], button_color[2])
         if button_color[0] == 1 and button_color[1] == 0 and button_color[2] == 0:
             which_turn()
         else:
@@ -44,7 +52,11 @@ def on_button_press(button):
             which_turn()
 
     print(check_winner())  # Проверка победителя после каждого хода
- # Проверка победителя после каждого хода
+
+    # winner_message = check_winner()
+    # print(winner_message)  # Print the winner message
+    # if winner_message != "No winner yet.":
+    #     sys.exit()
 
 # Проверка выигрышных комбинаций
 def check_win():
@@ -63,23 +75,87 @@ def check_win():
 def check_winner():
     if check_win():
         if first_hod == "player_1":
+            
             return "Player 1 wins!"
+            sys.exit()
+            
         else:
             return "Player 2 wins!"
+            sys.exit()
     return "No winner yet."
 
-class ColorGame(App):
-    def build(self):
-        layout = GridLayout(cols=3, spacing=10)
+class InputScreen(Screen):
+    def __init__(self, **kwargs):
+        super(InputScreen, self).__init__(**kwargs)
+        self.layout = BoxLayout(orientation='vertical')
+        self.input_label = Label(text="Введите ваше имя:")
+        self.input_text = TextInput()
+        self.submit_button = Button(text="Готово", on_press=self.switch_to_game)
+        self.layout.add_widget(self.input_label)
+        self.layout.add_widget(self.input_text)
+        self.layout.add_widget(self.submit_button)
+        self.add_widget(self.layout)
+
+    def switch_to_game(self, instance):
+        # Переключаемся на экран игры и передаем введенное имя
         
+        self.manager.get_screen('game').start_game(self.input_text.text)
+        self.manager.current = 'game'
+
+class GameScreen(Screen):
+    def __init__(self, **kwargs):
+        super(GameScreen, self).__init__(**kwargs)
+        self.layout = GridLayout(cols=3, spacing=10)
+        # self.game_label = Label(text="Игра начинается!", )
+        # self.layout.add_widget(self.game_label)
+        self.add_widget(self.layout)
+
+    def start_game(self, player_name):
+        # self.game_label.text = f"Игра начинается, {player_name}!"
         for i in range(3):
             for j in range(3):
                 button = Button(text=f'Button {i * 3 + j + 1}', background_color=[1, 1, 1, 1])
                 button_positions[i][j] = (i * 300, j * 300)
                 button.bind(on_press=lambda btn: on_button_press(btn))
-                layout.add_widget(button)
+                self.layout.add_widget(button)  # Add button to the layout
+class Win(Screen):
+    def __init__(self, **kwargs):
+        super(Win, self).__init__(**kwargs)
+        self.layout= BoxLayout(orientation="vertical")
+        self.game_label = Label(text="player *** won game!!!", )
+        self.layout.add_widget(self.game_label)
+        self.add_widget(self.layout)
+    def win_message(self):
+        # if check_winner() == "Player 1 wins!" or check_winner() == "Player 2 wins!":
+        #     print("win")
+            self.manager.get_screen("win screen").start_game(self.layout)
+            self.manager.current = "win screen"
+            self.game_label.text = f'player win'
+    if check_winner() == "Player 1 wins!":
+        print("win")
+        win_message()
+            
+    else:
+        print("loose")
+class ColorGame(App):
+    def build(self):
+        # layout = GridLayout(cols=3, spacing=10)
+        sm = ScreenManager()
+        input_screen = InputScreen(name = "input")
+        game_screen = GameScreen(name = "game")
+        win = Win(name = "win screen")
+        sm.add_widget(input_screen)
+        sm.add_widget(game_screen)
+        sm.add_widget(win)
+        for i in range(3):
+            for j in range(3):
+                
+                button = Button(text=f'Button {i * 3 + j + 1}', background_color=[1, 1, 1, 1])
+                button_positions[i][j] = (i * 300, j * 300)
+                button.bind(on_press=lambda btn: on_button_press(btn))
+                # layout.add_widget(button)
         
-        return layout
+        return sm
 
 if __name__ == '__main__':
     ColorGame().run()

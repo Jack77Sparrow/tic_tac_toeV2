@@ -1,33 +1,49 @@
-from tic_tac_toe import button_y, button_x, first_hod
+from kivy.app import App
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
+from kivy.uix.boxlayout import BoxLayout
+class InputScreen(Screen):
+    def __init__(self, **kwargs):
+        super(InputScreen, self).__init__(**kwargs)
+        self.layout = BoxLayout(orientation='vertical')
+        self.input_label = Label(text="Введите ваше имя:")
+        self.input_text = TextInput()
+        self.submit_button = Button(text="Готово", on_press=self.switch_to_game)
+        self.layout.add_widget(self.input_label)
+        self.layout.add_widget(self.input_text)
+        self.layout.add_widget(self.submit_button)
+        self.add_widget(self.layout)
 
+    def switch_to_game(self, instance):
+        # Переключаемся на экран игры и передаем введенное имя
+        self.manager.get_screen('game').start_game(self.input_text.text)
+        self.manager.current = 'game'
 
-# Проверка выигрышных комбинаций
-def check_win():
-    # Проверка по горизонтали
-    for i in range(3):
-        if button_y[i][0] == button_y[i][1] == button_y[i][2] or button_x[i][0] == button_x[i][1] == button_x[i][2]:
-            return True
-    
-    # Проверка по вертикали
-    for i in range(3):
-        if button_y[0][i] == button_y[1][i] == button_y[2][i] or button_x[0][i] == button_x[1][i] == button_x[2][i]:
-            return True
-    
-    # Проверка по диагоналям
-    if button_y[0][0] == button_y[1][1] == button_y[2][2] or button_x[0][0] == button_x[1][1] == button_x[2][2]:
-        return True
-    if button_y[0][2] == button_y[1][1] == button_y[2][0] or button_x[0][2] == button_x[1][1] == button_x[2][0]:
-        return True
-    
-    return False
+class GameScreen(Screen):
+    def __init__(self, **kwargs):
+        super(GameScreen, self).__init__(**kwargs)
+        self.layout = BoxLayout(orientation='vertical')
+        self.game_label = Label(text="Игра начинается!")
+        self.layout.add_widget(self.game_label)
+        self.add_widget(self.layout)
 
-# Проверка победителя
-def check_winner():
-    if check_win():
-        if first_hod == "player_1":
-            return "Player 1 wins!"
-        else:
-            return "Player 2 wins!"
-    return "No winner yet."
+    def start_game(self, player_name):
+        self.game_label.text = f"Игра начинается, {player_name}!"
 
-print(check_winner())
+class MyApp(App):
+    def build(self):
+        # Создаем экраны
+        sm = ScreenManager()
+        input_screen = InputScreen(name='input')
+        game_screen = GameScreen(name='game')
+
+        # Добавляем экраны в менеджер экранов
+        sm.add_widget(input_screen)
+        sm.add_widget(game_screen)
+
+        return sm
+
+if __name__ == '__main__':
+    MyApp().run()
