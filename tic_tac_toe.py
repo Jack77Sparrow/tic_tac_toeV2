@@ -126,7 +126,7 @@ class GameScreen(Screen):
         # self.game_label.text = f"Игра начинается, {player_name}!"
         for i in range(3):
             for j in range(3):
-                button = Button(text=f'Button {i * 3 + j + 1}', background_color=[1, 1, 1, 1])
+                button = Button(text=f'', background_color=[1, 1, 1, 1])
                 button_positions[i][j] = (i * 300, j * 300)
                 button.bind(on_press=lambda btn: on_button_press(btn))
                 self.layout.add_widget(button)  # Add button to the layout
@@ -136,7 +136,7 @@ class Win(Screen):
         self.layout = BoxLayout(orientation="vertical")
         self.game_label = Label(text="")
         self.layout.add_widget(self.game_label)
-        self.first_hod = Label(text="", size = (1000, 500))
+        self.first_hod = Label(text="")
         self.layout.add_widget(self.first_hod)
         self.add_widget(self.layout)
         
